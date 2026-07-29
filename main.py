@@ -177,9 +177,39 @@ async def add_channel(client, message: Message):
         await file_name_input.delete(True)
 
         # Process the HTML file and extract data
-        with open(html_file_path, 'r') as f:
-            soup = BeautifulSoup(f, 'html.parser')
-            tables = soup.find_all('table')
+        import re
+import json
+import base64
+
+with open(html_file_path, "r", encoding="utf-8") as f:
+    html = f.read()
+
+# CONFIG object se data nikaalo
+match = re.search(r'const\s+CONFIG\s*=\s*({.*?});', html, re.DOTALL)
+
+if not match:
+    await message.reply_text("❌ CONFIG data not found.")
+    return
+
+config = json.loads(match.group(1))
+
+videos = []
+
+for topic, lectures in config.get("data", {}).items():
+    for item in lectures:
+        title = item.get("title", "").strip()
+        encoded = item.get("link", "")
+        file_type = item.get("type", "")
+
+        try:
+            link = base64.b64decode(encoded).decode("utf-8")
+        except:
+            link = encoded
+
+        if file_type.upper() == "PDF":
+            videos.append(f"{topic} | {title} PDF : {link}")
+        else:
+            videos.append(f"{topic} | {title} : {link}")
             if not tables:
                 await message.reply_text(
                     "🚨 **Error**: No tables found in the HTML file. Please ensure the HTML file contains valid data."
