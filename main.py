@@ -180,9 +180,8 @@ async def add_channel(client, message: Message):
         # Process the HTML file and extract data
         with open(html_file_path, "r", encoding="utf-8") as f:
             html = f.read()
-
-# CONFIG object se data nikaalo
-match = re.search(r'const\s+CONFIG\s*=\s*({.*?});', html, re.DOTALL)
+        # CONFIG object se data nikaalo
+        match = re.search(r'const\s+CONFIG\s*=\s*({.*?});', html, re.DOTALL)
 
 if not match:
     await message.reply_text("❌ CONFIG data not found.")
