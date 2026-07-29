@@ -150,41 +150,77 @@ async def add_channel(client, message: Message):
     )
 
     try:
-        # Wait for user to send HTML file
-        input_message: Message = await bot.listen(message.chat.id)
-        if not input_message.document:
-            await message.reply_text(
-                "🚨 **Error**: You need to send a valid **HTML file**. Please send a file with the `.html` extension."
-            )
-            return
+    try:
+    # Wait for user to send HTML file
+    input_message: Message = await bot.listen(message.chat.id)
 
-        html_file_path = await input_message.download()
-
-        # Ask the user for a custom file name
+    if not input_message.document:
         await message.reply_text(
-            "🔤 **Now, please provide the file name (without extension)**\n\n"
-            "For example: **'output'** or **'video_list'**\n\n"
-            "If you're unsure, we'll default to 'output'."
+            "🚨 **Error**: You need to send a valid **HTML file**. Please send a file with the `.html` extension."
         )
+        return
 
-        # Wait for the custom file name input
-        file_name_input: Message = await bot.listen(message.chat.id)
-        custom_file_name = file_name_input.text.strip()
+    html_file_path = await input_message.download()
 
-        # If the user didn't provide a name, use the default one
-        if not custom_file_name:
-            custom_file_name = "output"
+    # Ask for custom output file name
+    await message.reply_text(
+        "🔤 **Now, please provide the file name (without extension)**\n\n"
+        "For example: **output** or **video_list**"
+    )
 
-        await file_name_input.delete(True)
+    file_name_input: Message = await bot.listen(message.chat.id)
+    custom_file_name = file_name_input.text.strip()
 
-        # Process the HTML file and extract data
-        with open(html_file_path, "r", encoding="utf-8") as f:
-            html = f.read()
-        # CONFIG object se data nikaalo
-        match = re.search(r'const\s+CONFIG\s*=\s*({.*?});', html, re.DOTALL)
+    if not custom_file_name:
+        custom_file_name = "output"
 
-if not match:
-    await message.reply_text("❌ CONFIG data not found.")
+    await file_name_input.delete(True)
+
+    # Read HTML
+    with open(html_file_path, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    # Extract CONFIG object
+    match = re.search(r'const\s+CONFIG\s*=\s*({.*?});', html, re.DOTALL)
+
+    if not match:
+        await message.reply_text("❌ CONFIG data not found.")
+        return
+
+    config = json.loads(match.group(1))
+
+    videos = []
+
+    for topic, lectures in config.get("data", {}).items():
+        for item in lectures:
+            title = item.get("title", "").strip()
+            encoded = item.get("link", "")
+            file_type = item.get("type", "").upper()
+
+            try:
+                link = base64.b64decode(encoded).decode("utf-8")
+            except:
+                link = encoded
+
+            if file_type == "PDF":
+                videos.append(f"{topic} | {title} PDF : {link}")
+            else:
+                videos.append(f"{topic} | {title} : {link}")
+
+    txt_file = os.path.splitext(html_file_path)[0] + f"_{custom_file_name}.txt"
+
+    with open(txt_file, "w", encoding="utf-8") as f:
+        f.write("\n".join(videos))
+
+    await message.reply_document(
+        document=txt_file,
+        caption=f"✅ `{custom_file_name}.txt` generated successfully."
+    )
+
+    os.remove(txt_file)
+
+except Exception as e:
+    await message.reply_text(f"❌ Error:\n`{e}`")
     return
 
 config = json.loads(match.group(1))
