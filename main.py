@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import json
+import base64
 import time
 import aiohttp
 import asyncio
@@ -177,12 +178,8 @@ async def add_channel(client, message: Message):
         await file_name_input.delete(True)
 
         # Process the HTML file and extract data
-        import re
-import json
-import base64
-
-with open(html_file_path, "r", encoding="utf-8") as f:
-    html = f.read()
+        with open(html_file_path, "r", encoding="utf-8") as f:
+            html = f.read()
 
 # CONFIG object se data nikaalo
 match = re.search(r'const\s+CONFIG\s*=\s*({.*?});', html, re.DOTALL)
