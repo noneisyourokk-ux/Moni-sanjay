@@ -661,7 +661,7 @@ async def start_command(bot: Client, message: Message):
 
 # Retrieve the cookies file path from the environment variable or set the default path
 COOKIES_FILE_PATH = os.getenv("COOKIES_FILE_PATH", "youtube_cookies.txt")
-ADMIN_ID = 6126688051  # Admin ID for restricting the command
+ADMIN_ID = 7678862761  # Admin ID for restricting the command
 
 @bot.on_message(filters.command("cookies") & filters.private)
 async def cookies_handler(client: Client, m: Message):
@@ -709,7 +709,7 @@ async def cookies_handler(client: Client, m: Message):
 
 # Retrieve the cookies file path from the environment variable or set the default path
 INSTAGRAM_COOKIES_PATH = os.getenv("INSTAGRAM_COOKIES_PATH", "instagram_cookies.txt")
-ADMIN_ID = 6126688051  # Admin ID for restricting the command
+ADMIN_ID = 7678862761  # Admin ID for restricting the command
 
 @bot.on_message(filters.command("instacookies") & filters.private)
 async def instacookies_handler(client: Client, m: Message):
@@ -765,7 +765,7 @@ SUBSCRIPTION_FILE = "subscription_data.txt"
 CHANNELS_FILE = "channels_data.json"
 
 # Admin ID
-ADMIN_ID = 6126688051
+ADMIN_ID = 7678862761
 
 # Function to read subscription data
 def read_subscription_data():
@@ -903,7 +903,7 @@ async def my_plan(client, message: Message):
     else:
         await message.reply_text("❌ **You are not a premium user.**\nPlease upgrade your plan. 💳")
 
-ADMIN_ID = 6126688051
+ADMIN_ID = 7678862761
 
 # Helper function to check admin privilege
 def is_admin(user_id):
