@@ -1,26 +1,18 @@
-#FROM python:3.9.7-slim-buster
-FROM python:3.10.8-slim-buster
+FROM python:3.10-slim-bookworm
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc libffi-dev ffmpeg aria2 \
+    gcc \
+    libffi-dev \
+    ffmpeg \
+    aria2 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /app/
-WORKDIR /app/
+COPY . /app
+WORKDIR /app
 
-RUN pip3 install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir pytube yt-dlp selenium cloudscraper gunicorn
 
-RUN pip3 install pytube
+ENV COOKIES_FILE_PATH=/app/youtube_cookies.txt
 
-RUN pip3 install yt-dlp
-
-RUN pip3 install -U yt-dlp
-
-RUN pip3 install selenium
-
-RUN pip3 install cloudscraper
-
-ENV COOKIES_FILE_PATH="/app/youtube_cookies.txt"
-
-#CMD ["python3", "modules/main.py"]
-CMD gunicorn app:app & python3 main.py
+CMD sh -c "gunicorn app:app & python3 main.py"
