@@ -153,11 +153,11 @@ async def add_channel(client, message: Message):
         input_message: Message = await bot.listen(message.chat.id)
         
         if not input_message.document:
-            await message.reply_text(
+        await message.reply_text(
                 "🚨 **Error**: You need to send a valid **HTML file**. Please send a file with the `.html` extension."
-            )
-            return
-            html_file_path = await input_message.download()
+        )
+        return
+        html_file_path = await input_message.download()
 
     # Ask for custom output file name
     await message.reply_text(
