@@ -150,14 +150,15 @@ async def add_channel(client, message: Message):
     )
 
     try:
-        input_message: Message = await bot.listen(message.chat.id)
-        
-        if not input_message.document:
+    input_message: Message = await bot.listen(message.chat.id)
+
+    if not input_message.document:
         await message.reply_text(
-                "🚨 **Error**: You need to send a valid **HTML file**. Please send a file with the `.html` extension."
+            "🚨 **Error**: You need to send a valid **HTML file**. Please send a file with the `.html` extension."
         )
         return
-        html_file_path = await input_message.download()
+
+    html_file_path = await input_message.download()
 
     # Ask for custom output file name
     await message.reply_text(
@@ -172,6 +173,9 @@ async def add_channel(client, message: Message):
         custom_file_name = "output"
 
     await file_name_input.delete(True)
+
+except Exception as e:
+    await message.reply_text(f"❌ Error:\n`{e}`")
 
     # Read HTML
     with open(html_file_path, "r", encoding="utf-8") as f:
