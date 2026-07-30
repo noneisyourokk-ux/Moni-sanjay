@@ -150,8 +150,7 @@ async def add_channel(client, message: Message):
     )
 
     try:
-    # Wait for user to send HTML file
-    input_message: Message = await bot.listen(message.chat.id)
+        input_message: Message = await bot.listen(message.chat.id)
 
     if not input_message.document:
         await message.reply_text(
